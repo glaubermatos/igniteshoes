@@ -7,6 +7,8 @@ import {
   storageProductGetAll,
 } from '../storage/storageCart';
 
+import { tagCartUpdate } from '../notifications/notificationsTags'
+
 export type CartContextDataProps = {
   addProductCart: (newProduct: StorageCartProps) => Promise<void>;
   removeProductCart: (productId: string) => Promise<void>;
@@ -26,6 +28,9 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
     try {
       const storageResponse = await storageProductSave(newProduct);
       setCart(storageResponse);
+
+      //cria uma tag OneSignal com a quantidade de itens no carrinho
+      tagCartUpdate(storageResponse.length.toString())
     } catch (error) {
       throw error;
     }
@@ -35,6 +40,9 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
     try {
       const response = await storageProductRemove(productId);
       setCart(response);
+
+      //cria uma tag OneSignal com a quantidade de itens no carrinho
+      tagCartUpdate(response  .length.toString())
     } catch (error) {
       throw error;
     }
